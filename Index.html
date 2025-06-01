@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verification Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    #box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+    .hidden { display: none; }
+    .bot-reply {
+      margin-top: 20px;
+      background: #e0ffe0;
+      padding: 15px;
+      border: 1px solid green;
+      border-radius: 5px;
+    }
+    .error {
+      margin-top: 20px;
+      background: #ffdddd;
+      padding: 15px;
+      border: 1px solid red;
+      border-radius: 5px;
+    }
+    #loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="box">
+  <h2 id="verify-msg">✅ User verification successful!</h2>
+  <div id="loader" class="hidden"></div>
+  <div id="bot-reply" class="bot-reply hidden"></div>
+  <div id="error-msg" class="error hidden"></div>
+</div>
+
+<script>
+  // Configuration - these would ideally come from your backend or environment
+  const BACKEND_URL = 'https://your-flask-app-url.herokuapp.com/send'; // Replace with your actual backend URL
+  const CHAT_ID = '-1002576051528'; // Replace with your actual chat ID
+  const SECRET_KEY = 'your-secret-key'; // Should match what's in your .env file
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const verifyMsg = document.getElementById('verify-msg');
+    const botReply = document.getElementById('bot-reply');
+    const errorMsg = document.getElementById('error-msg');
+    const loader = document.getElementById('loader');
+
+    setTimeout(async () => {
+      verifyMsg.classList.add('hidden');
+      loader.classList.remove('hidden');
+
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-Secret-Key': SECRET_KEY
+          },
+          body: JSON.stringify({ chat_id: CHAT_ID })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to send message');
+        }
+
+        botReply.textContent = data.result?.text || '🤖 Your verification was successful!';
+        botReply.classList.remove('hidden');
+      } catch (error) {
+        errorMsg.textContent = `Error: ${error.message}`;
+        errorMsg.classList.remove('hidden');
+      } finally {
+        loader.classList.add('hidden');
+      }
+    }, 2000);
+  });
+</script>
+
+</body>
+</html>
