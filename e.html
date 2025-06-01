@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verification Successful</title>
+    <meta http-equiv="refresh" content="5;url=tg://resolve?domain=@KingxLipu_bot">
+</head>
+<body>
+    <h1>🎉 Verification Successful!</h1>
+    <p>You will be redirected back to Telegram in 5 seconds...</p>
+    <a href="tg://resolve?domain=@KingxLipu_bot">Click here if not redirected</a>
+    
+    <script>
+        // Notify your backend about successful verification
+        fetch('your-backend-endpoint', {
+            method: 'POST',
+            body: JSON.stringify({
+                user_id: new URLSearchParams(window.location.search).get('telegram_id'),
+                status: 'verified'
+            })
+        });
+    </script>
+</body>
+</html>
